@@ -8,10 +8,8 @@ module my_project (
 wire       sysclk;
 wire       locked;
 reg        led_reg;
-reg        button_reg;       		// Previous stable value
-reg        sw_sync_0, sw_sync_1; 	// Synchronizer stages
-reg        reset_sync_0, reset_sync_1;
-wire       rst;              		// Synchronous reset
+wire       rst_n;              		// Synchronous reset
+wire       sig_sw;
 
 // PLL instance
 pll u0(
@@ -21,32 +19,30 @@ pll u0(
     .locked(locked)
 );
 
-// Synchronize reset to system clock
-always @(posedge sysclk) begin
-    reset_sync_0 <= ~reset_n | ~locked;
-    reset_sync_1 <= reset_sync_0;
-end
+sync_meta #(.STAGES(2)) sync_bit (
+    .sysclk(sysclk),
+    .async_in(reset_n),
+    .sync_out(rst_n)
+);
 
-assign rst = reset_sync_1;
+sync_meta #(.STAGES(2)) sync_bit1 (
+    .sysclk(sysclk),
+    .async_in(sw_i),
+    .sync_out(sig_sw)
+);
 
-// Synchronize switch input to avoid metastability
-always @(posedge sysclk) begin
-    sw_sync_0 <= sw_i;
-    sw_sync_1 <= sw_sync_0;
+always @(posedge sysclk or negedge rst_n)
+begin
+    if (!rst_n) 
+        led_reg     <= 1'b0; 
+    else
+    begin
+        if (!sig_sw) 
+            led_reg <= ~led_reg;  // Toggle LED on falling edge
+    end
 end
 
 assign led_o = led_reg;
 
-always @(posedge sysclk) begin
-    if (rst) begin
-        led_reg     <= 1'b0;
-        button_reg  <= 1'b1;  // Assume switch is unpressed at start
-    end else begin
-        if (!sw_sync_1 && button_reg) begin
-            led_reg <= ~led_reg;  // Toggle LED on falling edge
-        end
-        button_reg <= sw_sync_1;  // Store last switch state
-    end
-end
 
 endmodule
