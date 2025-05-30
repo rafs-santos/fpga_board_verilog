@@ -69,6 +69,7 @@ set_location_assignment PIN_F3 -to sw_i
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to sw_i
 set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 200 LFPM AIRFLOW"
 set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
+set_global_assignment -name VERILOG_FILE my_bin_counter.v
 set_global_assignment -name VERILOG_FILE sync_meta.v
 set_global_assignment -name SDC_FILE my_project.sdc
 set_global_assignment -name VERILOG_FILE my_project.v
