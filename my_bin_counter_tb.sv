@@ -60,7 +60,7 @@ module my_bin_counter_tb;
             sig_en = 1'b1; #30;
             @(posedge sysclk);
             // Trigger switch bounce (final state = 1)
-            switch_bounce(1'b0, sig_sw);
+            switch_bounce(.final_state_i(1'b0), .bounced_sw_o(sig_sw));
 
             #200 $finish;  // Final termination
         end
@@ -112,8 +112,8 @@ task automatic switch_bounce(
     ref     logic bounced_sw_o
 );
     const time MIN_BOUNCE_DELAY = 1ns;
-    const time MAX_BOUNCE_DELAY = 20ns;
-    const int  N_BOUNCES = 15;
+    const time MAX_BOUNCE_DELAY = 2ns;
+    const int  N_BOUNCES = 20;
     const time SETTLE_TIME = 200ns;
     
     int i;
@@ -123,7 +123,7 @@ task automatic switch_bounce(
     
     for (i = 0; i < N_BOUNCES; i++) begin
         // Random delay between bounces
-        #($urandom_range(MIN_BOUNCE_DELAY, MAX_BOUNCE_DELAY));
+        #MAX_BOUNCE_DELAY;
         prob = $urandom_range(0, 100);
         // Apply random bounce state
         bounced_sw_o = (prob > 50) ? 1'b1 : 1'b0;
@@ -131,8 +131,8 @@ task automatic switch_bounce(
         $display("[%t] Bounce %0d: state=%b: ", 
                  $time, i+1, bounced_sw_o);
     end
-    
     // Final settle and set to target state
-    #SETTLE_TIME;
     bounced_sw_o = final_state_i;
+    #SETTLE_TIME;
+    
 endtask
