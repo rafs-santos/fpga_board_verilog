@@ -13,14 +13,10 @@ module my_debounce_tb;
 
 
     //Instantiate the DUT
-    my_debounce #
-    (
-        .N(8)
-    )
+    my_debounce
     dut (
         .sysclk(sysclk),
         .reset_n(reset_n),
-        .max_value(8'h0F),
         .signal_i(sig_sw),
         .signal_o(sig_sw_reg)
     );

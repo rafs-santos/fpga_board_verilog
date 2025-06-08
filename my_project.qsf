@@ -201,6 +201,13 @@ set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_COUNTER_PIPELINE=
 set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_ADVANCED_TRIGGER_ENTITY=basic,1," -section_id auto_signaltap_0
 set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_TRIGGER_LEVEL_PIPELINE=1" -section_id auto_signaltap_0
 set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_ENABLE_ADVANCED_TRIGGER=0" -section_id auto_signaltap_0
+set_global_assignment -name EDA_TEST_BENCH_ENABLE_STATUS TEST_BENCH_MODE -section_id eda_simulation
+set_global_assignment -name EDA_NATIVELINK_SIMULATION_TEST_BENCH my_project_tb -section_id eda_simulation
+set_global_assignment -name EDA_TEST_BENCH_NAME my_project_tb -section_id eda_simulation
+set_global_assignment -name EDA_DESIGN_INSTANCE_NAME NA -section_id my_project_tb
+set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME my_project_tb -section_id my_project_tb
+set_global_assignment -name EDA_TEST_BENCH_FILE my_project_tb.sv -section_id my_project_tb
+set_global_assignment -name VERILOG_FILE async_resetFFstyle2.v
 set_global_assignment -name VERILOG_FILE my_debounce.v
 set_global_assignment -name VERILOG_FILE my_bin_counter.v
 set_global_assignment -name VERILOG_FILE sync_meta.v

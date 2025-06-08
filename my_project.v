@@ -1,69 +1,88 @@
 module my_project (
-    input        clk_50,
-    input        reset_n,
-    input        sw_i,
-    output       led_o
+    input   wire    clk_50,
+    input   wire    reset_n,
+    input   wire    sw_i,
+    output  wire    led_o
 );
 
 parameter CONST_D = 8'h0A;
 
-wire       sysclk;
-reg        led_reg;
-wire       rst_n;              		// Synchronous reset
-wire       sig_sw;
+wire        sysclk;
+wire        locked;                  // PLL lock signal
+wire        rst_n;              		// Synchronous reset
+wire        master_arst_n;       // Combined master reset
+reg         led_reg;
+reg         led_next;
 
-reg       sig_load_reg;
-reg       sig_load_next;
-reg       sig_en_reg;
-reg       sig_en_next;
-wire      sig_sw_reg;
+wire        sig_sw;
 
+wire        db_f_edge;
+wire        db_o;
+reg         db_dly;
+// Combine external reset and PLL lock status
+assign master_arst_n = reset_n & locked;
 
 // PLL instance
 pll u0(
-    .areset(1'b0),    // Active high async reset for PLL
+    .areset(~reset_n),    // Active high async reset for PLL
     .inclk0(clk_50),
     .c0(sysclk),
-    .locked()
+    .locked(locked)
 );
 
-sync_meta #(.STAGES(2)) sync_bit (
+sync_meta async_reset
+(
     .sysclk(sysclk),
-    .async_in(reset_n),
+    .reset_n(reset_n),
+    .async_in(master_arst_n),
     .sync_out(rst_n)
-);
+); 
 
-sync_meta #(.STAGES(2)) sync_bit1 (
+sync_meta sync_button 
+(
     .sysclk(sysclk),
+    .reset_n(rst_n),
     .async_in(sw_i),
     .sync_out(sig_sw)
 );
-// .max_value(32'h0016E360),
-//Debounce
+
 my_debounce #
 (
-    .N(32)
+    .N(32),
+    .MAX_VAL(32'd150000)
 )
-dut (
+my_debounce0 
+(
     .sysclk(sysclk),
     .reset_n(rst_n),
-    .max_value(32'h007270E0),
     .signal_i(sig_sw),
-    .signal_o(sig_sw_reg)
+    .signal_o(db_o)
 );
 
-always @(posedge sysclk or negedge rst_n)
+// falling edge detection
+always @(posedge sysclk)
+begin
+    db_dly <= db_o;
+end
+assign db_f_edge = !db_o & db_dly;
+
+// toogle output led
+always @(posedge sysclk, negedge rst_n)
 begin
     if (!rst_n) 
         led_reg     <= 1'b0; 
     else
-    begin
-        if (!sig_sw_reg) 
-            led_reg <= ~led_reg;  // Toggle LED on falling edge
-    end
+        led_reg <= led_next;  // Toggle LED on falling edge
 end
 
-assign led_o = led_reg;
+//next-state logic
+always @(*) begin
+    led_next = led_reg;  // Default: stay in current state
+    if(db_f_edge)
+        led_next = !led_reg;
+end
 
+//output logic
+assign led_o = led_reg;
 
 endmodule
