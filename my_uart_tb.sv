@@ -4,7 +4,14 @@ module my_uart_tb;
 reg sysclk;
 reg reset_n;
 reg sig_rx;
-my_uart dut
+
+my_uart #
+(
+    .N(8),
+    .PSCALER(2),
+    .DIV(10)
+)
+dut
 (
     .sysclk (sysclk),
     .reset_n (reset_n),
@@ -31,7 +38,6 @@ initial begin
     sig_rx  <= 1'b0;
     @(posedge sysclk);
     repeat(2) @(posedge sysclk);
-
     #400
     $finish;
 end
