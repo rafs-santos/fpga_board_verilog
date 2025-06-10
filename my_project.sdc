@@ -40,7 +40,7 @@ set_time_format -unit ns -decimal_places 3
 #**************************************************************
 
 create_clock -name {master_clk} -period 20.000 -waveform { 0.000 10.000 } [get_ports {clk_50}]
-create_generated_clock -multiply_by 3 -source [get_ports {clk_50}] -name sysclk
+create_generated_clock -multiply_by 12 -divide_by 5 -source [get_ports {clk_50}] -name sysclk
 
 derive_pll_clocks
 # create_generated_clock -name iock -source [get_ports {clk_50}] [get_nets {u0|altpll_component|auto_generated|wire_pll1_clk[0]}]

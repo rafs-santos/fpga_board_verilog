@@ -34,13 +34,14 @@ module my_uart
             bits    <= ~0;
         end
 		else begin
-            if(pScaler_reg >= PSCALER-1) begin
+            if(pScaler_reg >= PSCALER-1) 
+            begin
                 bits[DIV-1:1]   <= bits[DIV-2:0];
                 bits[0]         <= rx_i;
-                pScaler_reg = 0;
+                pScaler_reg <= 0;
             end
             else
-                pScaler_reg = pScaler_reg + 1;
+                pScaler_reg <= pScaler_reg + 1;
 			case (state)
 				START_BIT: begin
 					if (!bits[DIV-1]) begin
