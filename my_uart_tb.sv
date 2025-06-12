@@ -8,7 +8,7 @@ reg sig_rx;
 my_uart #
 (
     .N(8),
-    .PSCALER(2),
+    .PSCALER(1),
     .DIV(10)
 )
 dut
@@ -37,11 +37,10 @@ initial begin
     reset_n   <= 1;
     sig_rx  <= 1'b0;
     @(posedge sysclk);
-    repeat(2) @(posedge sysclk);
-    #400
+    repeat(10) @(posedge sysclk);
+    sig_rx  <= 1'b1;
+    #800
     $finish;
 end
 
 endmodule
-
-
