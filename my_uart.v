@@ -35,8 +35,11 @@ module my_uart
 	always @ (posedge sysclk) begin
 		if (!reset_n) begin
             state_reg       <= START_BIT;
-            shift_reg        <= ~0;
-            pscaler_reg <= 0;
+            shift_reg       <= ~0;
+            pscaler_reg     <= 0;
+            counter_bits    <= 0;
+            counter_data    <= 0;
+            rxdata_reg      <= 0;
         end
 		else begin
             if(pscaler_reg >= PSCALER-1) 
@@ -44,13 +47,10 @@ module my_uart
                 shift_reg[DIV-1:1]  <= shift_reg[DIV-2:0];
                 mbits_reg           <= shift_reg[DIV/2+1:DIV/2-1];
                 shift_reg[0]        <= rx_i;
-                pscaler_reg         <= 0;
-                counter_bits        <= 0;
-                counter_data        <= 0;
-                rxdata_reg          <= 0;
             end
             else
                 pscaler_reg <= pscaler_reg + 1;
+                
 			case (state_reg)
 				START_BIT: begin
 					if(pscaler_reg == 0) begin
