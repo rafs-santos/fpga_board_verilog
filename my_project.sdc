@@ -84,8 +84,11 @@ set_input_delay -clock altera_reserved_tck -clock_fall 1 [get_ports altera_reser
 #**************************************************************
 # Set Output Delay
 #**************************************************************
-set_output_delay -add_delay -max -clock [get_clocks {sysclk}] 0.000 [get_ports {led_o}]
+set_output_delay -add_delay -max -clock [get_clocks {sysclk}] 1.000 [get_ports {led_o}]
 set_output_delay -add_delay -min -clock [get_clocks {sysclk}] 0.000 [get_ports {led_o}]
+
+set_output_delay -add_delay -max -clock [get_clocks {sysclk}] 1.000 [get_ports {tx_o}]
+set_output_delay -add_delay -min -clock [get_clocks {sysclk}] 0.000 [get_ports {tx_o}]
 
 # Constrain the TDO port
 set_output_delay -clock altera_reserved_tck -clock_fall 1 [get_ports altera_reserved_tdo]
@@ -102,7 +105,7 @@ set_clock_groups -asynchronous -group [get_clocks altera_reserved_tck]
 #**************************************************************
 set_false_path -from [get_ports {reset_n}]
 set_false_path -from [get_ports {sw_i}]
-
+set_false_path -from [get_ports {rx_i}]
 
 #**************************************************************
 # Set Multicycle Path
