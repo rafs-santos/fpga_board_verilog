@@ -79,7 +79,7 @@ my_debounce0
 my_uart #
 (
     .N(8),
-    .PSCALER(625),
+    .PSCALER(104),
     .DIV(10)
 )
 uart_loopback
@@ -119,7 +119,7 @@ always @(*)
 begin
     sig_tx_data_next = sig_tx_data_reg;  // Default: stay in current state
     sig_tx_start_next   = sig_tx_start_reg;
-    if(sig_rx_end & !sig_rx_err)
+    if(sig_rx_end && !sig_rx_err)
     begin
         sig_tx_data_next    = sig_rx_data;
         sig_tx_start_next   = 1'b1;

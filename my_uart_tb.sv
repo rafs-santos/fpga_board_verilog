@@ -17,7 +17,7 @@ reg [7:0] sig_rx_data;
 my_uart #
 (
     .N(8),
-    .PSCALER(4),
+    .PSCALER(1),
     .DIV(10)
 )
 dut
@@ -55,6 +55,7 @@ initial begin
     @(posedge sysclk);                  //
     sig_tx_start    <= 1'b0;
     wait(sig_tx_end == 1'b1);
+    wait(sig_rx_end == 1'b1);
     #800
     $finish;
 end

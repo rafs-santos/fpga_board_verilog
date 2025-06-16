@@ -58,6 +58,8 @@ module uart_rx
 			case (state_reg)
                 IDLE:
                 begin
+                    rx_err_o    <= 1'b0;
+                    rx_end_o    <= 1'b0;
 					if(rx_i == 0)
                     begin
                         state_reg   <= START_BIT;
